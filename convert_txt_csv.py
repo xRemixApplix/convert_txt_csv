@@ -1,6 +1,7 @@
 # Module
 import os
 import time
+import pandas
 
 startTime = time.time()
 
@@ -13,9 +14,10 @@ for fileName in listFiles:
     try:
         # Ouverture du fichier .txt a convertir
         file = open("aConvertir/"+fileName+".txt", 'r')
+        assert fileName != "readme"
         
     except Exception:
-        pass
+        pass 
     
     else:
         # Lecture du fichier
@@ -25,7 +27,7 @@ for fileName in listFiles:
         words = []
         line_break = 0
 
-        # Ajout des mots du fichier dans la
+        # Ajout des mots du fichier dans la liste
         for x in range(0, len(new_text)):
             for word in new_text[x].split("\t"):
                 words.append(word + ',')
@@ -43,6 +45,9 @@ for fileName in listFiles:
                 
             line_break += 1
         f.close()
+        
+df = pandas.read_csv('test.txt', delimiter=" ")
+df.to_excel('output.xlsx', 'Sheet1', index=False)
 
 # Confirmation de fin d'execution du script
 print("########################")
