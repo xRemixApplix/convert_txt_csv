@@ -5,6 +5,7 @@ import pandas
 
 startTime = time.time()
 
+# Choix du type de conversion
 choix = int(input("Choix de conversion (0->CSV ou 1->EXCEL)\n"))
 
 SOURCE_ENCODING = "utf-16 LE"
@@ -22,10 +23,12 @@ if choix==0 or choix==1 :
             file = open("aConvertir/"+fileName+".txt", 'r')
             assert fileName != "readme" 
             
+        # Leve une exception si le fichier n'existe pas ou si c'est le fichier readme.txt
         except Exception:
             pass 
         
         else:
+            # Conversion en CSV
             if choix == 0 :
                 # Lecture du fichier
                 new_text = file.readlines()
@@ -40,31 +43,28 @@ if choix==0 or choix==1 :
                         words.append(word + ',')
 
                 # Ecriture des mots dans le nouveau fichier .csv
-                f = open("result/"+fileName+".csv",'w')
-
-                for x in range(0, len(words)):
-                    if (line_break == 4):
-                        f.write('\n')
-                        f.write(words[x])
-                        line_break = 0 
-                    elif line_break < 3:
-                        f.write(words[x])
-                        
-                    line_break += 1
-                f.close()
+                with open("result/"+fileName+".csv",'w') as f:
+                    for x in range(0, len(words)):
+                        if (line_break == 4):
+                            f.write('\n')
+                            f.write(words[x])
+                            line_break = 0 
+                        elif line_break < 3:
+                            f.write(words[x])
+                            
+                        line_break += 1
+            # Conversion en EXCEL          
             elif choix == 1 :
                 fileUtf16 = "aConvertir/"+fileName+".txt"
                 fileUtf8 = "aConvertir/"+fileName+"_utf8.txt"
                 
-                with open(fileUtf16, "r", encoding=SOURCE_ENCODING) as fich :
-                    content = fich.read()
-                with open(fileUtf8, "w", encoding=TARGET_ENCODING) as fich :
-                    fich.write(content)
+                with open(fileUtf16, "r", encoding=SOURCE_ENCODING) as fich_sour :
+                    with open(fileUtf8, "w", encoding=TARGET_ENCODING) as fich_targ :
+                        fich_targ.write(fich_sour.read())
                             
-                df = pandas.read_csv("aConvertir/"+fileName+"_utf8.txt", sep=";")
-                df.to_excel("result/"+fileName+".xlsx", 'Sheet1', index=False)
+                pandas.read_csv(fileUtf8, sep=";").to_excel("result/"+fileName+".xlsx", 'Sheet1', index=False)
                 
-                print("Conversion du fichier {} : OK".format(fileName+".txt"))
+            print("Conversion du fichier {} : OK".format(fileName+".txt"))
 else:
     print("Choix de conversion incorrecte.")
 
